@@ -1,10 +1,12 @@
 package com.example.androideatit;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.androideatit.Common.Common;
 import com.example.androideatit.Interface.ItemClickListener;
 import com.example.androideatit.Model.Category;
+import com.example.androideatit.Model.Food;
 import com.example.androideatit.ViewHolder.MenuViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -49,6 +51,7 @@ public class Home extends AppCompatActivity
     TextView txtFullName;
     RecyclerView recycler_menu;
     RecyclerView.LayoutManager layoutManager;
+    FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +113,7 @@ public class Home extends AppCompatActivity
                         .build();
 
 
-        FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull Category model) {
                 holder.txtMenuName.setText(model.getName());
@@ -121,7 +124,13 @@ public class Home extends AppCompatActivity
                 holder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-                        Toast.makeText(Home.this, ""+category.getName(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(Home.this, ""+category.getName(), Toast.LENGTH_SHORT).show();
+                        //Gey Category ID and Sent It to new Menu
+                        Intent foodList = new Intent(Home.this, FoodList.class);
+
+                        //Becasue CategoryId is a Key, Get Key of Item
+                        foodList.putExtra("CategoryId", adapter.getRef(position).getKey());
+                        startActivity(foodList);
                     }
                 });
 
