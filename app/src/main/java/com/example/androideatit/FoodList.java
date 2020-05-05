@@ -136,7 +136,7 @@ public class FoodList extends AppCompatActivity {
     private void startSearch(CharSequence text) {
         FirebaseRecyclerOptions<Food> options =
                 new FirebaseRecyclerOptions.Builder<Food>()
-                        .setQuery(foodList.orderByChild("Name").equalTo(text.toString()), Food.class) //Compare Name
+                        .setQuery(foodList.orderByChild("name").equalTo(text.toString()), Food.class) //Compare Name
                         .build();
 
 
@@ -172,7 +172,7 @@ public class FoodList extends AppCompatActivity {
     }
 
     private void loadSuggest() {
-        foodList.orderByChild("MenuId").equalTo(categoryId)
+        foodList.orderByChild("menuId").equalTo(categoryId)
                 .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -192,7 +192,7 @@ public class FoodList extends AppCompatActivity {
     private void loadListFood(String categoryId) {
         FirebaseRecyclerOptions<Food> options =
                 new FirebaseRecyclerOptions.Builder<Food>()
-                        .setQuery(foodList.orderByChild("MenuId").equalTo(categoryId), Food.class)
+                        .setQuery(foodList.orderByChild("menuId").equalTo(categoryId), Food.class)
                         .build();
 
 

@@ -16,6 +16,14 @@ public class Category {
         return Name;
     }
 
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public void setImage(String image) {
+        Image = image;
+    }
+
     public String getImage() {
         return Image;
     }
