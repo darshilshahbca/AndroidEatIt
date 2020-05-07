@@ -44,6 +44,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.paperdb.Paper;
+
 public class Home extends AppCompatActivity {
 
 
@@ -72,6 +74,8 @@ public class Home extends AppCompatActivity {
         //Init Firebase
         database = FirebaseDatabase.getInstance();
         category = database.getReference("Category");
+
+        Paper.init(this);
 
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -107,9 +111,18 @@ public class Home extends AppCompatActivity {
                     Intent orderIntent = new Intent(Home.this, OrderStatus.class);
                     startActivity(orderIntent);
                 }  else if(menuItem.getItemId() == R.id.nav_log_out){
+
+
+                    //Log Out - Delete Rememember User & Password
+                    Paper.book().destroy();
+
+
+
                     Intent signIn = new Intent(Home.this, SignIn.class);
                     signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(signIn);
+
+
                 }
                 return true;
             }
