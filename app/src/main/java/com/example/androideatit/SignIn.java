@@ -42,49 +42,52 @@ public class SignIn extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                if (Common.isConnectedToInternet(getBaseContext())) {
+                    final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
+                    mDialog.setMessage("Please Wait....");
+                    mDialog.show();
 
-                final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
-                mDialog.setMessage("Please Wait....");
-                mDialog.show();
+                    table_user.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                table_user.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        //Check if User not exist in Database
-                        if(dataSnapshot.child(edtPhone.getText().toString()).exists()) {
+                            //Check if User not exist in Database
+                            if (dataSnapshot.child(edtPhone.getText().toString()).exists()) {
 
 
-                            mDialog.dismiss();
+                                mDialog.dismiss();
 
-                            //Get User Information
-                            User user = dataSnapshot.child(edtPhone.getText().toString()).getValue(User.class);
+                                //Get User Information
+                                User user = dataSnapshot.child(edtPhone.getText().toString()).getValue(User.class);
 
-                            user.setPhone(edtPhone.getText().toString()); //Set Phone Number
+                                user.setPhone(edtPhone.getText().toString()); //Set Phone Number
 
-                            if (user.getPassword().equals(edtPassword.getText().toString())) {
-                                Intent homeIntent = new Intent(SignIn.this, Home.class);
+                                if (user.getPassword().equals(edtPassword.getText().toString())) {
+                                    Intent homeIntent = new Intent(SignIn.this, Home.class);
 
-                                //To Store Login User Detail
-                                Common.currentUser = user;
-                                startActivity(homeIntent);
-                                finish();
+                                    //To Store Login User Detail
+                                    Common.currentUser = user;
+                                    startActivity(homeIntent);
+                                    finish();
 
+                                } else {
+                                    Toast.makeText(SignIn.this, "Wrong Password !", Toast.LENGTH_SHORT).show();
+                                }
                             } else {
-                                Toast.makeText(SignIn.this, "Wrong Password !", Toast.LENGTH_SHORT).show();
+                                mDialog.dismiss();
+                                Toast.makeText(SignIn.this, "User not exist in Database", Toast.LENGTH_SHORT).show();
                             }
                         }
-                        else{
-                            mDialog.dismiss();
-                            Toast.makeText(SignIn.this,"User not exist in Database", Toast.LENGTH_SHORT).show();
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                    });
+                } else{
+                    Toast.makeText(SignIn.this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         });
 

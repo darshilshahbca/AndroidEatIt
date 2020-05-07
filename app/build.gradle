@@ -55,4 +55,6 @@ dependencies {
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
 
+    implementation 'com.google.firebase:firebase-messaging:20.1.6'
+
 }
