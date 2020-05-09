@@ -10,6 +10,8 @@
     <string name="action_settings">Settings</string>
     <string name="forgot_pwd"><u>Forgot Password</u></string>
 
+    <string name="facebook_app_id">2756930361072037</string>
+    <string name="facebook_login_protocol_name">fb2756930361072037</string>
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
