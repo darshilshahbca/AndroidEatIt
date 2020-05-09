@@ -45,6 +45,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.Menu;
 import android.view.ViewGroup;
@@ -72,6 +73,8 @@ public class Home extends AppCompatActivity {
 
     FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
 
+    SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +84,39 @@ public class Home extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
+
+        //View
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setColorSchemeResources(
+                R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(Common.isConnectedToInternet(getBaseContext()))
+                    loadMenu();
+                else{
+                    Toast.makeText(getBaseContext(), "Please check your connection!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
+
+        //Deafult, Load for first time
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if(Common.isConnectedToInternet(getBaseContext()))
+                    loadMenu();
+                else{
+                    Toast.makeText(getBaseContext(), "Please check your connection!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
 
         //Init Firebase
         database = FirebaseDatabase.getInstance();
@@ -154,12 +190,7 @@ public class Home extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(layoutManager);
 
-        if(Common.isConnectedToInternet(this))
-            loadMenu();
-        else{
-            Toast.makeText(this, "Please check your connection!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
 
         //Register Service
         Intent service = new Intent(Home.this, ListenOrder.class);
@@ -285,6 +316,8 @@ public class Home extends AppCompatActivity {
         };
         adapter.startListening();
         recycler_menu.setAdapter(adapter);
+
+        swipeRefreshLayout.setRefreshing(false);
 
     }
 
