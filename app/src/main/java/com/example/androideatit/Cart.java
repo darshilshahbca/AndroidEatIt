@@ -50,22 +50,15 @@ public class Cart extends AppCompatActivity {
 
     CartAdapter adapter;
 
+
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Note: Add this before Set Content View
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-        .setDefaultFontPath("fonts/restaurant_font.otf")
-        .setFontAttrId(R.attr.fontPath)
-        .build());
-
-
         setContentView(R.layout.activity_cart);
 
         //Firebase

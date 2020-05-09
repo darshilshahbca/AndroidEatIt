@@ -51,6 +51,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.Menu;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,21 +81,16 @@ public class Home extends AppCompatActivity {
 
     SwipeRefreshLayout swipeRefreshLayout;
 
+
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Note: Add this before Set Content View
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/restaurant_font.otf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
-
         setContentView(R.layout.activity_home);
 
 
@@ -134,9 +131,50 @@ public class Home extends AppCompatActivity {
             }
         });
 
+        //For Animation----End---// It can be used for only one static adapter possible for Category and Orderstatus
+        //Not possible for --- Foodlist as it has 2 adapter.
+
         //Init Firebase
         database = FirebaseDatabase.getInstance();
         category = database.getReference("Category");
+
+        //Make sure you move function after Database is getInstanceId
+        FirebaseRecyclerOptions<Category> options =
+                new FirebaseRecyclerOptions.Builder<Category>()
+                        .setQuery(category, Category.class)
+                        .build();
+
+        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull Category model) {
+                holder.txtMenuName.setText(model.getName());
+                Picasso.get().load(model.getImage()).into(holder.imageView);
+
+                final Category category = model;
+
+                holder.setItemClickListener(new ItemClickListener() {
+                    @Override
+                    public void onClick(View view, int position, boolean isLongClick) {
+//                        Toast.makeText(Home.this, ""+category.getName(), Toast.LENGTH_SHORT).show();
+                        //Gey Category ID and Sent It to new Menu
+                        Intent foodList = new Intent(Home.this, FoodList.class);
+
+                        //Becasue CategoryId is a Key, Get Key of Item
+                        foodList.putExtra("CategoryId", adapter.getRef(position).getKey());
+                        startActivity(foodList);
+                    }
+                });
+
+            }
+
+            @NonNull
+            @Override
+            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item, parent, false);
+                return new MenuViewHolder(view);
+            }
+        };
+
 
         Paper.init(this);
 
@@ -202,10 +240,13 @@ public class Home extends AppCompatActivity {
 
         //Load Menu
         recycler_menu = (RecyclerView)findViewById(R.id.recycler_menu);
-        recycler_menu.setHasFixedSize(true);
+//        recycler_menu.setHasFixedSize(true);
 //        layoutManager = new LinearLayoutManager(this);
 //        recycler_menu.setLayoutManager(layoutManager);
         recycler_menu.setLayoutManager(new GridLayoutManager(this,2 ));
+        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(recycler_menu.getContext(),
+                R.anim.layout_fall_down);
+        recycler_menu.setLayoutAnimation(controller);
 
 
 
@@ -295,46 +336,16 @@ public class Home extends AppCompatActivity {
 
     private void loadMenu() {
 
-        FirebaseRecyclerOptions<Category> options =
-                new FirebaseRecyclerOptions.Builder<Category>()
-                        .setQuery(category, Category.class)
-                        .build();
 
 
-        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull Category model) {
-                holder.txtMenuName.setText(model.getName());
-                Picasso.get().load(model.getImage()).into(holder.imageView);
-
-                final Category category = model;
-
-                holder.setItemClickListener(new ItemClickListener() {
-                    @Override
-                    public void onClick(View view, int position, boolean isLongClick) {
-//                        Toast.makeText(Home.this, ""+category.getName(), Toast.LENGTH_SHORT).show();
-                        //Gey Category ID and Sent It to new Menu
-                        Intent foodList = new Intent(Home.this, FoodList.class);
-
-                        //Becasue CategoryId is a Key, Get Key of Item
-                        foodList.putExtra("CategoryId", adapter.getRef(position).getKey());
-                        startActivity(foodList);
-                    }
-                });
-
-            }
-
-            @NonNull
-            @Override
-            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item, parent, false);
-                return new MenuViewHolder(view);
-            }
-        };
         adapter.startListening();
         recycler_menu.setAdapter(adapter);
 
         swipeRefreshLayout.setRefreshing(false);
+
+        //Animation
+        recycler_menu.getAdapter().notifyDataSetChanged();
+        recycler_menu.scheduleLayoutAnimation();
 
     }
 

@@ -28,21 +28,9 @@ public class SignUp extends AppCompatActivity {
     Button btnSignUp;
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Note: Add this before Set Content View
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/restaurant_font.otf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
-
-        setContentView(R.layout.activity_sign_up);
+         setContentView(R.layout.activity_sign_up);
 
         edtName = (MaterialEditText)findViewById(R.id.edtName);
         edtPassword = (MaterialEditText)findViewById(R.id.edtPassword);

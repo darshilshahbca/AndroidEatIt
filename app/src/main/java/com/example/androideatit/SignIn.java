@@ -43,19 +43,8 @@ public class SignIn extends AppCompatActivity {
     DatabaseReference table_user;
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Note: Add this before Set Content View
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/restaurant_font.otf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
-
         setContentView(R.layout.activity_sign_in);
 
         edtPassword = (MaterialEditText)findViewById(R.id.edtPassword);

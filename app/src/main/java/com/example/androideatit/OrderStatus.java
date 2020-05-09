@@ -38,21 +38,8 @@ public class OrderStatus extends AppCompatActivity {
     FirebaseRecyclerAdapter<Request, OrderViewHolder> adapter;
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Note: Add this before Set Content View
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/restaurant_font.otf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
-
-
         setContentView(R.layout.activity_order_status);
 
         //Firebase
@@ -69,6 +56,12 @@ public class OrderStatus extends AppCompatActivity {
         } else{
             loadOrders(getIntent().getStringExtra("userPhone"));
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     private void loadOrders(String phone) {

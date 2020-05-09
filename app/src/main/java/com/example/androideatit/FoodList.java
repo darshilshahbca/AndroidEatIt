@@ -103,20 +103,8 @@ public class FoodList extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Note: Add this before Set Content View
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/restaurant_font.otf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
-
         setContentView(R.layout.activity_food_list);
 
         //Init Facebook
@@ -302,6 +290,13 @@ public class FoodList extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+        searchAdapter.stopListening();
+    }
+
     private void loadListFood(String categoryId) {
         FirebaseRecyclerOptions<Food> options =
                 new FirebaseRecyclerOptions.Builder<Food>()
@@ -369,7 +364,6 @@ public class FoodList extends AppCompatActivity {
         };
         adapter.startListening();
         recyclerView.setAdapter(adapter);
-
         swipeRefreshLayout.setRefreshing(false);
     }
 }
