@@ -37,6 +37,10 @@ dependencies {
     // add the Firebase SDK for Google Analytics
     implementation 'com.google.firebase:firebase-analytics:17.4.0'
 
+    //Slider
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation 'com.daimajia.slider:library:1.1.5@aar'
+
     //Search Function
     implementation 'com.github.dinukapj:MaterialSearchBar:0.7.2'
 

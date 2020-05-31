@@ -5,9 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.andremion.counterfab.CounterFab;
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.example.androideatit.Common.Common;
 import com.example.androideatit.Database.Database;
 import com.example.androideatit.Interface.ItemClickListener;
+import com.example.androideatit.Model.Banner;
 import com.example.androideatit.Model.Category;
 import com.example.androideatit.Model.Food;
 import com.example.androideatit.Service.ListenOrder;
@@ -36,9 +41,13 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rey.material.widget.Slider;
 import com.squareup.picasso.Picasso;
 
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -75,10 +84,16 @@ public class Home extends AppCompatActivity {
 
     FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
 
+    //Slider
+    HashMap<String, String> image_list;
+    SliderLayout mSlider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -175,7 +190,68 @@ public class Home extends AppCompatActivity {
         Intent service = new Intent(Home.this, ListenOrder.class);
         startService(service);
 
+        //Setup Slider
+        setupSlider();
 
+    }
+
+    private void setupSlider() {
+        mSlider = (SliderLayout)findViewById(R.id.slider);
+        image_list = new HashMap<>();
+
+        final DatabaseReference banner = database.getReference("Banner");
+        banner.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                    Banner banner = postSnapshot.getValue(Banner.class);
+                    //We will concat String and Id like
+                    image_list.put(banner.getName()+"_"+banner.getId(), banner.getImage());
+                }
+
+                for(String key: image_list.keySet()){
+                    String[] keySplit = key.split("_");
+                    String nameOfFood= keySplit[0];
+                    String idOfFood = keySplit[1];
+
+                    //Create Slider
+                    final TextSliderView textSliderView = new TextSliderView(getBaseContext());
+                    textSliderView
+                            .description(nameOfFood)
+                            .image(image_list.get(key))
+                            .setScaleType(BaseSliderView.ScaleType.Fit)
+                            .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
+                                @Override
+                                public void onSliderClick(BaseSliderView slider) {
+                                    Intent intent = new Intent(Home.this, FoodDetail.class);
+                                    //We will send FoodId to Food Detail
+                                    intent.putExtras(textSliderView.getBundle());
+                                    startActivity(intent);
+                                }
+                            });
+
+                    //Add Extra Bundle
+                    textSliderView.bundle(new Bundle());
+                    textSliderView.getBundle().putString("FoodId",idOfFood);
+                    textSliderView.setPicasso(Picasso.get());
+
+                    mSlider.addSlider(textSliderView);
+
+                    //Remove event after Finish
+                    banner.removeEventListener(this);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        mSlider.setPresetTransformer(SliderLayout.Transformer.Background2Foreground);
+        mSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mSlider.setCustomAnimation(new DescriptionAnimation());
+        mSlider.setDuration(4000);
     }
 
     private void showHomeAddressDialog() {
@@ -297,6 +373,13 @@ public class Home extends AppCompatActivity {
         aleartDialog.show();
 
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+        mSlider.stopAutoCycle();
     }
 
     private void loadMenu() {
