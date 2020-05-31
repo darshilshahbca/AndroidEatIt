@@ -143,6 +143,9 @@ public class Home extends AppCompatActivity {
                 else if(menuItem.getItemId() == R.id.nav_change_pwd){
                     showChangePasswordDialog();
                 }
+                else if(menuItem.getItemId() == R.id.nav_home_address){
+                    showHomeAddressDialog();
+                }
                 return true;
             }
         });
@@ -170,6 +173,50 @@ public class Home extends AppCompatActivity {
         Intent service = new Intent(Home.this, ListenOrder.class);
         startService(service);
 
+
+    }
+
+    private void showHomeAddressDialog() {
+        AlertDialog.Builder aleartDialog = new AlertDialog.Builder(Home.this);
+        aleartDialog.setTitle("CHANGE HOME ADDRESS");
+        aleartDialog.setMessage("Please fill all your information");
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View layout_home = inflater.inflate(R.layout.home_address_layout, null);
+
+        final MaterialEditText edtHomeAddress = layout_home.findViewById(R.id.edtHomeAddress);
+
+        aleartDialog.setView(layout_home);
+
+        //Button
+        aleartDialog.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+                Common.currentUser.setHomeAddress(edtHomeAddress.getText().toString());
+
+                FirebaseDatabase.getInstance().getReference("User")
+                        .child(Common.currentUser.getPhone())
+                        .setValue(Common.currentUser)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(Home.this, "Update Address Successful", Toast.LENGTH_LONG).show();
+                            }
+                        });
+            }
+        });
+
+
+        aleartDialog.setNegativeButton("CANCLE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        aleartDialog.show();
 
     }
 

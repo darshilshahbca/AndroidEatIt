@@ -14,6 +14,8 @@ public class Common {
     public static final String USER_KEY = "User" ;
     public static final String PWD_KEY = "Password" ;
 
+    public static final String INTENT_FOOD_ID = "FoodId";
+
     public static String convertCodeToStatus(String status) {
         if(status.equals("0"))
             return "Placed";
