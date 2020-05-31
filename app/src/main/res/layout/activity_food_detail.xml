@@ -47,7 +47,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.andremion.counterfab.CounterFab
         android:id="@+id/btnCart"
         android:src="@drawable/ic_shopping_cart_black_24dp"
         android:background="@android:color/white"

@@ -4,7 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.andremion.counterfab.CounterFab;
 import com.example.androideatit.Common.Common;
+import com.example.androideatit.Database.Database;
 import com.example.androideatit.Interface.ItemClickListener;
 import com.example.androideatit.Model.Category;
 import com.example.androideatit.Model.Food;
@@ -89,7 +91,7 @@ public class Home extends AppCompatActivity {
         Paper.init(this);
 
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        CounterFab fab = (CounterFab)findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,6 +99,9 @@ public class Home extends AppCompatActivity {
                startActivity(cartIntent);
             }
         });
+
+        fab.setCount(new Database(this).getCountCart());
+
         drawerLayout = findViewById(R.id.drawer_layout);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
