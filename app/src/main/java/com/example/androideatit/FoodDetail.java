@@ -95,19 +95,30 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new Database(getBaseContext()).addToCart(new Order(
-                        foodId,
-                        currentFood.getName(),
-                        numberButton.getNumber(),
-                        currentFood.getPrice(),
-                        currentFood.getDiscount(),
-                        currentFood.getImage()
-                ));
+
+                boolean isExists = new Database(getBaseContext()).checkFoodExist(foodId, Common.currentUser.getPhone());
+                if(!isExists)
+                {
+                    new Database(getBaseContext()).addToCart(new Order(
+                            Common.currentUser.getPhone(),
+                            foodId,
+                            currentFood.getName(),
+                            numberButton.getNumber(),
+                            currentFood.getPrice(),
+                            currentFood.getDiscount(),
+                            currentFood.getImage()
+                    ));
+                } else {
+
+                    new Database(getBaseContext()).increaseCart(Common.currentUser.getPhone(),foodId);
+
+                }
+
                 Toast.makeText(FoodDetail.this, "Added to Cart", Toast.LENGTH_SHORT).show();
             }
         });
 
-        btnCart.setCount(new Database(this).getCountCart());
+        btnCart.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
         food_description = (TextView)findViewById(R.id.food_description);
         food_name = (TextView)findViewById(R.id.food_name);
@@ -258,6 +269,6 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
     @Override
     protected void onResume() {
         super.onResume();
-        btnCart.setCount(new Database(this).getCountCart());
+        btnCart.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
     }
 }

@@ -115,7 +115,7 @@ public class Cart extends AppCompatActivity {
                 requests.child(String.valueOf(System.currentTimeMillis()))
                         .setValue(request);
                 //Delete Cart
-                new Database(getBaseContext()).cleanCart();
+                new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
                 Toast.makeText(Cart.this, "Thank you, Order Place", Toast.LENGTH_SHORT).show();
                 finish();
 
@@ -135,7 +135,7 @@ public class Cart extends AppCompatActivity {
 
     private void loadListFood() {
 
-        cart = new Database(this).getCarts();
+        cart = new Database(this).getCarts(Common.currentUser.getPhone());
         adapter = new CartAdapter(cart, this);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
@@ -161,7 +161,7 @@ public class Cart extends AppCompatActivity {
     private void deleteCart(int position) {
         cart.remove(position);
 
-        new Database(this).cleanCart();
+        new Database(this).cleanCart(Common.currentUser.getPhone());
 
         for(Order item: cart)
             new Database(this).addToCart(item);

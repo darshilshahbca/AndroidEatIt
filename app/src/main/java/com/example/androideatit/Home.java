@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.text.Layout;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -46,6 +47,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rey.material.widget.Slider;
 import com.squareup.picasso.Picasso;
@@ -60,6 +62,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -116,7 +119,7 @@ public class Home extends AppCompatActivity {
             }
         });
 
-        fab.setCount(new Database(this).getCountCart());
+        fab.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
         drawerLayout = findViewById(R.id.drawer_layout);
 
@@ -161,6 +164,8 @@ public class Home extends AppCompatActivity {
                 }
                 else if(menuItem.getItemId() == R.id.nav_home_address){
                     showHomeAddressDialog();
+                } else if(menuItem.getItemId() == R.id.nav_setting){
+                    showSettingDialog();
                 }
                 return true;
             }
@@ -193,6 +198,57 @@ public class Home extends AppCompatActivity {
         //Setup Slider
         setupSlider();
 
+    }
+
+    private void showSettingDialog() {
+        AlertDialog.Builder aleartDialog = new AlertDialog.Builder(Home.this);
+        aleartDialog.setTitle("SETTINGS");
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View layout_setting = inflater.inflate(R.layout.setting_layout, null);
+
+        final CheckBox ckb_subscribe_new = (CheckBox)layout_setting.findViewById(R.id.ckb_sub_new);
+
+        //Add Code to remember state of checkbox
+        Paper.init(this);
+        String isSubscribe = Paper.book().read("sub_new");
+
+        if(isSubscribe == null || TextUtils.isEmpty(isSubscribe) || isSubscribe.equals("false"))
+            ckb_subscribe_new.setChecked(false);
+        else
+            ckb_subscribe_new.setChecked(true);
+
+        aleartDialog.setView(layout_setting);
+
+
+        //Button
+        aleartDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                if(ckb_subscribe_new.isChecked()){
+                    FirebaseMessaging.getInstance().subscribeToTopic(Common.topicName);
+
+                    //Write Value to Paper Book
+                    Paper.book().write("sub_new", "true");
+                } else {
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic(Common.topicName);
+
+                    //Write Value to Paper Book
+                    Paper.book().write("sub_new", "false");
+                }
+            }
+        });
+
+
+        aleartDialog.setNegativeButton("CANCLE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        aleartDialog.show();
     }
 
     @Override
