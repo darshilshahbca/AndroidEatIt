@@ -195,6 +195,13 @@ public class Home extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+        mSlider.startAutoCycle();
+    }
+
     private void setupSlider() {
         mSlider = (SliderLayout)findViewById(R.id.slider);
         image_list = new HashMap<>();
