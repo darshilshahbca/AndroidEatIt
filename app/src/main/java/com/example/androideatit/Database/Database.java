@@ -148,4 +148,10 @@ public class Database extends SQLiteAssetHelper {
         cursor.close();
         return flag;
     }
+
+    public void removeFromCart(String productId, String phone) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format("DELETE from OrderDetail WHERE UserPhone='%s' AND ProductId='%s';", phone, productId);
+        db.execSQL(query);
+    }
 }
