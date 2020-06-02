@@ -489,9 +489,16 @@ public class Home extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.home, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.refresh){
-            loadMenu();
+        if(item.getItemId() == R.id.menu_search){
+            startActivity(new Intent(Home.this, SearchActivity.class));
+
         }
 
         if(actionBarDrawerToggle.onOptionsItemSelected(item))
