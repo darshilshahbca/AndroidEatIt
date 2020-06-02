@@ -145,7 +145,10 @@ public class Home extends AppCompatActivity {
                 else if(menuItem.getItemId() == R.id.nav_orders){
                     Intent orderIntent = new Intent(Home.this, OrderStatus.class);
                     startActivity(orderIntent);
-                }  else if(menuItem.getItemId() == R.id.nav_log_out){
+                } else if(menuItem.getItemId() == R.id.nav_favorites){
+                    Intent favoriteIntent = new Intent(Home.this, FavoritesActivity.class);
+                    startActivity(favoriteIntent);
+                } else if(menuItem.getItemId() == R.id.nav_log_out){
 
 
                     //Log Out - Delete Rememember User & Password
